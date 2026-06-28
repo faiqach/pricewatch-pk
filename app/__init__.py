@@ -1,0 +1,1 @@
+"""PriceWatch PK application package."""

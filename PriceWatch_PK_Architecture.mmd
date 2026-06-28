@@ -1,0 +1,17 @@
+flowchart TD
+    A[Layer 1<br/>Mobile App (Flutter)] -->|HTTPS REST (JWT)| B[Layer 2<br/>Backend API (FastAPI)]
+    B -->|SQLAlchemy ORM| C[Layer 3<br/>Database (PostgreSQL)]
+    B -->|HTTPS POST<br/>price history JSON| E[External<br/>OpenRouter AI API]
+    E -->|JSON response<br/>forecast + anomaly| B
+    D[Layer 4<br/>Background Pipeline<br/>Daily 06:00 AM PKT] -->|Direct DB write| C
+    F[Layer 5<br/>Admin Web Panel] -->|HTTPS REST /admin| B
+    B -->|Approval queue data| F
+    C -->|Published prices| B
+    B -->|Displayed prices| A
+
+    style A fill:#e9f5ff,stroke:#6aaee8,stroke-width:2px
+    style B fill:#eefbf1,stroke:#69c982,stroke-width:2px
+    style C fill:#f4ebff,stroke:#a77bf5,stroke-width:2px
+    style D fill:#fff5e6,stroke:#f0a23b,stroke-width:2px
+    style F fill:#ffeef2,stroke:#f06c92,stroke-width:2px
+    style E fill:#f2f4f7,stroke:#94a3b8,stroke-width:2px
