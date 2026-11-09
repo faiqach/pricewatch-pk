@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 
-import 'package:agri_pulse/screens/auth/login_screen.dart';
+import 'package:pricewatch_pk/screens/auth/login_screen.dart';
 
 void main() {
   testWidgets('Login screen renders', (WidgetTester tester) async {
@@ -12,6 +12,6 @@ void main() {
     );
 
     expect(find.text('Welcome Back!'), findsOneWidget);
-    expect(find.text('Login to AgriPulse'), findsOneWidget);
+    expect(find.text('Login to PriceWatch PK'), findsOneWidget);
   });
 }

@@ -83,7 +83,7 @@ class _CropListScreenState extends State<CropListScreen> with SingleTickerProvid
     final isUrdu = LanguageScope.of(context).isUrdu;
     
     return StreamBuilder<List<Map<String, dynamic>>>(
-      stream: _firestoreService.watchCrops(),
+      stream: _firestoreService.watchCropsCombined(),
       builder: (context, snapshot) {
         final List<Map<String, dynamic>> source =
             snapshot.data != null && snapshot.data!.isNotEmpty

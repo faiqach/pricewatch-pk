@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -28,6 +29,7 @@ import 'screens/tools/tools_screen.dart';
 import 'screens/tools/weather_screen.dart';
 import 'screens/tools/firestore_seed_screen.dart';
 import 'screens/alerts/price_alert_screen.dart';
+import 'utils/city_provider.dart';
 import 'utils/colors.dart';
 import 'utils/constants.dart';
 import 'utils/language_provider.dart';
@@ -43,7 +45,7 @@ Future<void> main() async {
     debugPrint('AppInitializer failed to initialize: $e');
   }
 
-  runApp(const LanguageScope(child: MyApp()));
+  runApp(const CityScope(child: LanguageScope(child: MyApp())));
 }
 
 class MyApp extends StatelessWidget {
@@ -144,7 +146,7 @@ class MyApp extends StatelessWidget {
         notificationsRoute: (context) => const NotificationsScreen(),
         aboutRoute: (context) => const AboutAppScreen(),
         profileRoute: (context) => const ProfileScreen(),
-        seedFirestoreRoute: (context) => const FirestoreSeedScreen(),
+        if (kDebugMode) seedFirestoreRoute: (context) => const FirestoreSeedScreen(),
         PriceAlertScreen.routeName: (context) => const PriceAlertScreen(),
       },
       onGenerateRoute: (settings) {

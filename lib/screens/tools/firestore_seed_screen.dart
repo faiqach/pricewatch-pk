@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 
 import '../../data/dummy_data.dart';
@@ -30,6 +31,11 @@ class _FirestoreSeedScreenState extends State<FirestoreSeedScreen> {
       .fold(0, (total, length) => total + length);
 
   Future<void> _seedFirestore() async {
+    if (!kDebugMode) {
+      setState(() => _statusMessage = 'Seeding is disabled outside debug builds.');
+      return;
+    }
+
     setState(() {
       _isLoading = true;
       _statusMessage = 'Seeding Firestore collections...';

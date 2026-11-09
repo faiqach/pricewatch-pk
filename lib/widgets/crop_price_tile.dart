@@ -10,6 +10,7 @@ class CropPriceTile extends StatelessWidget {
   final String unit;
   final String trend;
   final double percentChange;
+  final double? vendorPrice;
 
   const CropPriceTile({
     super.key,
@@ -20,6 +21,7 @@ class CropPriceTile extends StatelessWidget {
     required this.trend,
     required this.percentChange,
     this.previousPrice,
+    this.vendorPrice,
   });
 
   @override
@@ -46,6 +48,9 @@ class CropPriceTile extends StatelessWidget {
     }
 
     final double prevP = previousPrice ?? price;
+    final double? deviationPercent =
+        (vendorPrice != null && price != 0) ? ((vendorPrice! - price) / price * 100) : null;
+    final bool isOverpriced = deviationPercent != null && deviationPercent >= 15;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -99,6 +104,41 @@ class CropPriceTile extends StatelessWidget {
                     ),
                   ],
                 ),
+                if (deviationPercent != null && vendorPrice != price) ...[
+                  const SizedBox(height: 3),
+                  Row(
+                    children: [
+                      Text(
+                        'Vendor: ${vendorPrice!.toStringAsFixed(0)} '
+                        '(${deviationPercent >= 0 ? '+' : ''}${deviationPercent.toStringAsFixed(1)}%)',
+                        style: TextStyle(
+                          color: isOverpriced ? Colors.red.shade700 : kTextLight,
+                          fontSize: 10.5,
+                          fontWeight: isOverpriced ? FontWeight.w700 : FontWeight.w500,
+                        ),
+                      ),
+                      if (isOverpriced) ...[
+                        const SizedBox(width: 5),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade50,
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: Colors.red.shade200),
+                          ),
+                          child: Text(
+                            'Overpriced',
+                            style: TextStyle(
+                              color: Colors.red.shade700,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
               ],
             ),
           ),

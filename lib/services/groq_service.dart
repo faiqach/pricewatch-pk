@@ -24,7 +24,7 @@ class GroqService {
         {
           'role': 'system',
           'content':
-              'You are AgriPulse assistant. Provide short, practical agricultural guidance for Pakistan.',
+              'You are PriceWatch PK assistant. Provide short, practical agricultural guidance for Pakistan.',
         },
         {'role': 'user', 'content': prompt},
       ],

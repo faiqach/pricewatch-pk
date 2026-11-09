@@ -22,6 +22,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
   
   final List<String> _cities = const [
     'Use Current Location',
+    'Bahawalnagar',
     'Lahore',
     'Islamabad',
     'Faisalabad',

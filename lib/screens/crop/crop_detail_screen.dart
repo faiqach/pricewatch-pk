@@ -35,10 +35,12 @@ class _CropDetailScreenState extends State<CropDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final crop = widget.crop;
-    
-    // Gov vs Market Mock Data (Simulating Web Scraper Pipeline)
-    final double govPrice = crop.price * 0.92; // 8% cheaper roughly
-    final double marketPrice = crop.price * 1.05; // 5% higher roughly
+
+    // Official (government/AMIS) price vs vendor (open-market) price,
+    // sourced from the scraper pipeline's `crops` and `market_prices` collections.
+    final double govPrice = crop.price;
+    final double marketPrice = crop.vendorPrice;
+    final double deviationPercent = crop.deviationPercent;
 
     final lang = LanguageScope.of(context);
     final isUrdu = lang.isUrdu;
@@ -262,7 +264,12 @@ class _CropDetailScreenState extends State<CropDetailScreen> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: kSecondaryColor.withValues(alpha: 0.3), width: 1.5),
+                    border: Border.all(
+                      color: crop.isOverpriced
+                          ? Colors.red.shade300
+                          : kSecondaryColor.withValues(alpha: 0.3),
+                      width: 1.5,
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.04),
@@ -278,14 +285,33 @@ class _CropDetailScreenState extends State<CropDetailScreen> {
                         children: [
                           const Icon(Icons.compare_arrows_rounded, color: kSecondaryColor),
                           const SizedBox(width: 8),
-                          Text(
-                            isUrdu ? 'قیمت کا موازنہ (اسکریپ شدہ)' : 'Price Comparison (Scraped)',
-                            style: const TextStyle(
-                              color: kTextDark,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
+                          Expanded(
+                            child: Text(
+                              isUrdu ? 'قیمت کا موازنہ (اسکریپ شدہ)' : 'Price Comparison (Scraped)',
+                              style: const TextStyle(
+                                color: kTextDark,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
+                          if (crop.isOverpriced)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.red.shade50,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.red.shade200),
+                              ),
+                              child: Text(
+                                isUrdu ? 'زیادہ قیمت' : 'Overpriced',
+                                style: TextStyle(
+                                  color: Colors.red.shade700,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -309,6 +335,19 @@ class _CropDetailScreenState extends State<CropDetailScreen> {
                             ),
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        isUrdu
+                            ? 'فرق: PKR ${(marketPrice - govPrice).toStringAsFixed(0)} '
+                                '(${deviationPercent >= 0 ? '+' : ''}${deviationPercent.toStringAsFixed(1)}% سرکاری قیمت سے)'
+                            : 'Difference: PKR ${(marketPrice - govPrice).toStringAsFixed(0)} '
+                                '(${deviationPercent >= 0 ? '+' : ''}${deviationPercent.toStringAsFixed(1)}% vs official)',
+                        style: TextStyle(
+                          color: crop.isOverpriced ? Colors.red.shade700 : kTextDark,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       const SizedBox(height: 10),
                       Container(

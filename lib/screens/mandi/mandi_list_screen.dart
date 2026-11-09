@@ -11,6 +11,7 @@ import '../../services/firestore_service.dart';
 import '../../services/location_service.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../utils/language_provider.dart';
+import '../../utils/city_provider.dart';
 
 class MandiListScreen extends StatefulWidget {
   static const String routeName = '/mandi-list';
@@ -28,17 +29,6 @@ class _MandiListScreenState extends State<MandiListScreen> {
 
   String _searchQuery = '';
   String _activeStatusFilter = 'All';
-  String _activeProvinceFilter = 'All';
-
-  final List<String> _provinces = [
-    'All',
-    'Punjab',
-    'Sindh',
-    'KPK',
-    'Balochistan',
-    'GB',
-    'AJK',
-  ];
 
   @override
   void initState() {
@@ -65,10 +55,6 @@ class _MandiListScreenState extends State<MandiListScreen> {
       if (!matchesStatus) {
         return false;
       }
-      
-      if (_activeProvinceFilter != 'All' && mandi.province != _activeProvinceFilter) {
-        return false;
-      }
 
       if (_searchQuery.isEmpty) {
         return true;
@@ -83,7 +69,9 @@ class _MandiListScreenState extends State<MandiListScreen> {
   @override
   Widget build(BuildContext context) {
     final isUrdu = LanguageScope.of(context).isUrdu;
-    
+    final cityNotifier = CityScope.of(context);
+    final selectedCity = cityNotifier.city;
+
     return StreamBuilder<List<Map<String, dynamic>>>(
       stream: _firestoreService.watchMandis(),
       builder: (context, snapshot) {
@@ -94,13 +82,15 @@ class _MandiListScreenState extends State<MandiListScreen> {
 
         List<MandiModel> allMandis =
             source.map((mandi) => MandiModel.fromMap(mandi)).toList();
-        
+
         if (_currentPosition != null) {
           allMandis = _locSvc.sortMandisByDistance(allMandis, _currentPosition!);
         }
 
-        final List<MandiModel> mandis = _applyFilters(allMandis);
-        final int openCount = allMandis.where((m) => m.isOpen).length;
+        final List<MandiModel> cityMandis =
+            allMandis.where((m) => m.city == selectedCity).toList();
+        final List<MandiModel> mandis = _applyFilters(cityMandis);
+        final int openCount = cityMandis.where((m) => m.isOpen).length;
 
         return Scaffold(
           appBar: AppBar(
@@ -138,7 +128,7 @@ class _MandiListScreenState extends State<MandiListScreen> {
                     ),
                   ),
                   child: Text(
-                    isUrdu ? '${allMandis.length} منڈیاں ملیں · $openCount آج کھلی ہیں' : '${allMandis.length} Mandis Found · $openCount Open Today',
+                    isUrdu ? '${cityMandis.length} منڈیاں ملیں · $openCount آج کھلی ہیں' : '${cityMandis.length} Mandis Found · $openCount Open Today',
                     style: const TextStyle(
                       color: kPrimaryColor,
                       fontWeight: FontWeight.w700,
@@ -185,18 +175,18 @@ class _MandiListScreenState extends State<MandiListScreen> {
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
-                            value: _activeProvinceFilter,
+                            value: selectedCity,
                             isExpanded: true,
-                            icon: const Icon(Icons.arrow_drop_down, color: kPrimaryColor),
-                            items: _provinces.map((prov) {
+                            icon: const Icon(Icons.location_city, color: kPrimaryColor),
+                            items: CityNotifier.availableCities.map((city) {
                               return DropdownMenuItem(
-                                value: prov,
-                                child: Text(prov == 'All' ? (isUrdu ? 'تمام صوبے' : 'All Provinces') : prov),
+                                value: city,
+                                child: Text(city),
                               );
                             }).toList(),
                             onChanged: (val) {
                               if (val != null) {
-                                setState(() => _activeProvinceFilter = val);
+                                cityNotifier.setCity(val);
                               }
                             },
                           ),
@@ -268,9 +258,9 @@ class _MandiListScreenState extends State<MandiListScreen> {
                         itemCount: mandis.length,
                         itemBuilder: (context, index) {
                           final MandiModel mandi = mandis[index];
-                          final bool isNearest = _currentPosition != null && 
-                                                 allMandis.isNotEmpty && 
-                                                 mandi.id == allMandis.first.id;
+                          final bool isNearest = _currentPosition != null &&
+                                                 cityMandis.isNotEmpty &&
+                                                 mandi.id == cityMandis.first.id;
                           return MandiCard(
                             name: mandi.name,
                             city: mandi.city,

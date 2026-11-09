@@ -26,7 +26,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   Future<void> _sendTestNotification(bool isUrdu) async {
     await NotificationService.instance.showTestNotification(
-      title: isUrdu ? 'AgriPulse اطلاع' : 'AgriPulse Alert',
+      title: isUrdu ? 'PriceWatch PK اطلاع' : 'PriceWatch PK Alert',
       body: isUrdu
           ? 'لاہور منڈی میں گندم کی قیمت آپ کے ہدف تک پہنچ گئی ہے۔'
           : 'Wheat crossed your target price in Lahore mandi.',

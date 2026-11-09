@@ -30,6 +30,7 @@ import '../../models/crop_model.dart';
 import '../../services/price_alert_service.dart';
 import '../../screens/alerts/price_alert_screen.dart';
 import '../../services/weather_service.dart';
+import '../../utils/city_provider.dart';
 
 // ── Palette extras ────────────────────────────────────────────────────────────
 const Color _deep   = Color(0xFF1B4332);
@@ -84,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text(isUrdu ? 'AgriPulse سے باہر نکلیں؟' : 'Exit AgriPulse?',
+        title: Text(isUrdu ? 'PriceWatch PK سے باہر نکلیں؟' : 'Exit PriceWatch PK?',
             style: AppFonts.dmSans(context, fontWeight: FontWeight.w700)),
         content: Text(isUrdu ? 'کیا آپ ایپ کو بند کرنا چاہتے ہیں؟' : 'Do you want to close the app?'),
         actions: [
@@ -361,9 +362,60 @@ class _HomeTabState extends State<_HomeTab> {
     }
   }
 
+  Future<void> _showCityPicker(BuildContext context) async {
+    final isUrdu = LanguageScope.of(context).isUrdu;
+    final cityNotifier = CityScope.of(context);
+
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+                  child: Text(
+                    isUrdu ? 'شہر منتخب کریں' : 'Select City',
+                    style: AppFonts.dmSans(ctx, fontSize: 16, fontWeight: FontWeight.w700, color: kTextDark),
+                  ),
+                ),
+                ...CityNotifier.availableCities.map((city) {
+                  final bool isSelected = city == cityNotifier.city;
+                  return ListTile(
+                    leading: Icon(Icons.location_city_rounded,
+                        color: isSelected ? _deep : kTextLight),
+                    title: Text(city,
+                        style: TextStyle(
+                          color: isSelected ? _deep : kTextDark,
+                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                        )),
+                    trailing: isSelected ? const Icon(Icons.check_circle_rounded, color: _deep) : null,
+                    onTap: () async {
+                      await cityNotifier.setCity(city);
+                      if (ctx.mounted) Navigator.of(ctx).pop();
+                    },
+                  );
+                }),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isUrdu = LanguageScope.of(context).isUrdu;
+    final selectedCity   = CityScope.of(context).city;
     final svc            = FirestoreService();
     final fallbackCrops  = DummyData.crops.take(4).toList();
 
@@ -373,7 +425,11 @@ class _HomeTabState extends State<_HomeTab> {
         // ── Hero header ──────────────────────────────────────────
         SliverPersistentHeader(
           pinned: true,
-          delegate: _HeroHeaderDelegate(isUrdu: isUrdu),
+          delegate: _HeroHeaderDelegate(
+            isUrdu: isUrdu,
+            selectedCity: selectedCity,
+            onTapCity: () => _showCityPicker(context),
+          ),
         ),
 
         SliverList(
@@ -457,7 +513,7 @@ class _HomeTabState extends State<_HomeTab> {
             ),
             const SizedBox(height: 10),
             StreamBuilder<List<Map<String, dynamic>>>(
-              stream: svc.watchCrops(limit: 4, orderByField: 'updatedAt', descending: true),
+              stream: svc.watchCropsCombined(limit: 4, orderByField: 'updatedAt', descending: true),
               builder: (context, snap) {
                 final cropsData = (snap.data?.isNotEmpty == true)
                     ? snap.data!
@@ -476,6 +532,7 @@ class _HomeTabState extends State<_HomeTab> {
                         name:          crop.name,
                         price:         price,
                         previousPrice: prev,
+                        vendorPrice:   crop.vendorPrice,
                         unit:          crop.unit,
                         trend:         crop.trend,
                         percentChange: crop.trend == 'stable' ? 0 : pct,
@@ -501,14 +558,17 @@ class _HomeTabState extends State<_HomeTab> {
                 final mandisData = (snap.data?.isNotEmpty == true)
                     ? snap.data!
                     : DummyData.mandis;
-                
-                List<MandiModel> mandiModels = mandisData.map((m) => MandiModel.fromMap(m)).toList();
-                
+
+                List<MandiModel> mandiModels = mandisData
+                    .map((m) => MandiModel.fromMap(m))
+                    .where((m) => m.city == selectedCity)
+                    .toList();
+
                 // If we have location, sort them
                 if (_currentPosition != null) {
                   mandiModels = _locSvc.sortMandisByDistance(mandiModels, _currentPosition!);
                 }
-                
+
                 // Take top 2
                 final topMandis = mandiModels.take(2).toList();
 
@@ -581,11 +641,18 @@ class _HeroHeaderDelegate extends SliverPersistentHeaderDelegate {
   static const double _minH = 88;
   
   final bool isUrdu;
-  _HeroHeaderDelegate({required this.isUrdu});
+  final String selectedCity;
+  final VoidCallback onTapCity;
+  _HeroHeaderDelegate({
+    required this.isUrdu,
+    required this.selectedCity,
+    required this.onTapCity,
+  });
 
   @override double get maxExtent => _maxH;
   @override double get minExtent => _minH;
-  @override bool shouldRebuild(covariant _HeroHeaderDelegate old) => old.isUrdu != isUrdu;
+  @override bool shouldRebuild(covariant _HeroHeaderDelegate old) =>
+      old.isUrdu != isUrdu || old.selectedCity != selectedCity;
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
@@ -676,21 +743,42 @@ class _HeroHeaderDelegate extends SliverPersistentHeaderDelegate {
                             );
                           },
                         ),
+                      if (t < 0.6) const SizedBox(height: 4),
+                      if (t < 0.6)
+                        GestureDetector(
+                          onTap: onTapCity,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.location_on_rounded, color: _accent, size: 14),
+                              const SizedBox(width: 3),
+                              Text(
+                                selectedCity,
+                                style: AppFonts.dmSans(context,
+                                  color: Colors.white.withValues(alpha: 0.90),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white70, size: 16),
+                            ],
+                          ),
+                        ),
                       if (t < 0.6) const SizedBox(height: 2),
                       RichText(
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: 'Agri',
-                              style: AppFonts.playfairDisplay(context, 
+                              text: 'PriceWatch',
+                              style: AppFonts.playfairDisplay(context,
                                 color: Colors.white,
                                 fontSize: _lerp(28, 20, t),
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
                             TextSpan(
-                              text: 'Pulse',
-                              style: AppFonts.playfairDisplay(context, 
+                              text: ' PK',
+                              style: AppFonts.playfairDisplay(context,
                                 color: _accent,
                                 fontSize: _lerp(28, 20, t),
                                 fontWeight: FontWeight.w700,

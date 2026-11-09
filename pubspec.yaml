@@ -1,4 +1,4 @@
-name: agri_pulse
+name: pricewatch_pk
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -65,9 +65,9 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/icon/agripulse_icon.png"
+  image_path: "assets/icon/pricewatch_icon.png"
   adaptive_icon_background: "#1B4332"
-  adaptive_icon_foreground: "assets/icon/agripulse_icon_fg.png"
+  adaptive_icon_foreground: "assets/icon/pricewatch_icon_fg.png"
   min_sdk_android: 21
   web:
     generate: false

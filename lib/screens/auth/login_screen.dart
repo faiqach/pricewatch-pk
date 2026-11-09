@@ -1,9 +1,9 @@
 import '../../utils/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:agri_pulse/screens/home/home_screen.dart';
-import 'package:agri_pulse/utils/colors.dart';
-import 'package:agri_pulse/utils/constants.dart';
+import 'package:pricewatch_pk/screens/home/home_screen.dart';
+import 'package:pricewatch_pk/utils/colors.dart';
+import 'package:pricewatch_pk/utils/constants.dart';
 import '../../main.dart';
 import '../../services/auth_service.dart';
 import '../../services/preferences_service.dart';
@@ -112,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      isUrdu ? 'ایگری پلس میں لاگ ان کریں' : 'Login to AgriPulse',
+                      isUrdu ? 'پرائس واچ پی کے میں لاگ ان کریں' : 'Login to PriceWatch PK',
                       style: AppFonts.dmSans(context, 
                         fontSize: 22,
                         fontWeight: FontWeight.w600,

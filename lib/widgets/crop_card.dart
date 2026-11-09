@@ -86,6 +86,39 @@ class CropCard extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
+              if (crop.vendorPrice != crop.price) ...[
+                const SizedBox(height: 2),
+                Text(
+                  'Vendor: ${crop.vendorPrice.toStringAsFixed(0)} '
+                  '(${crop.deviationPercent >= 0 ? '+' : ''}${crop.deviationPercent.toStringAsFixed(1)}%)',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: crop.isOverpriced ? Colors.red.shade700 : kTextLight,
+                    fontSize: 10.5,
+                    fontWeight: crop.isOverpriced ? FontWeight.w700 : FontWeight.w500,
+                  ),
+                ),
+                if (crop.isOverpriced) ...[
+                  const SizedBox(height: 3),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: Colors.red.shade200),
+                    ),
+                    child: Text(
+                      'Overpriced',
+                      style: TextStyle(
+                        color: Colors.red.shade700,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),

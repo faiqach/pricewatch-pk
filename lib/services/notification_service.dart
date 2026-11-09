@@ -40,8 +40,8 @@ class NotificationService {
   }) async {
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
-          'agri_pulse_alerts',
-          'AgriPulse Alerts',
+          'pricewatch_pk_alerts',
+          'PriceWatch PK Alerts',
           channelDescription: 'Price, market and advisory notifications',
           importance: Importance.high,
           priority: Priority.high,

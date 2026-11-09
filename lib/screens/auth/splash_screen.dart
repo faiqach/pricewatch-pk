@@ -274,8 +274,8 @@ class _SplashScreenState extends State<SplashScreen>
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                  text: 'Agri',
-                                  style: AppFonts.playfairDisplay(context, 
+                                  text: 'PriceWatch',
+                                  style: AppFonts.playfairDisplay(context,
                                     color: Colors.white,
                                     fontSize: 40,
                                     fontWeight: FontWeight.w700,
@@ -283,8 +283,8 @@ class _SplashScreenState extends State<SplashScreen>
                                   ),
                                 ),
                                 TextSpan(
-                                  text: 'Pulse',
-                                  style: AppFonts.playfairDisplay(context, 
+                                  text: ' PK',
+                                  style: AppFonts.playfairDisplay(context,
                                     color: _accent,
                                     fontSize: 40,
                                     fontWeight: FontWeight.w700,

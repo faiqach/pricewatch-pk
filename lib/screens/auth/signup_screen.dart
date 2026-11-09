@@ -2,8 +2,8 @@ import '../../utils/app_fonts.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:agri_pulse/utils/colors.dart';
-import 'package:agri_pulse/utils/constants.dart';
+import 'package:pricewatch_pk/utils/colors.dart';
+import 'package:pricewatch_pk/utils/constants.dart';
 import '../../services/auth_service.dart';
 import '../../utils/language_provider.dart';
 
@@ -132,7 +132,7 @@ class _SignupScreenState extends State<SignupScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            _WaveHeader(title: isUrdu ? 'ایگری پلس میں شامل ہوں' : 'Join AgriPulse'),
+            _WaveHeader(title: isUrdu ? 'پرائس واچ پی کے میں شامل ہوں' : 'Join PriceWatch PK'),
 
             Expanded(
               child: SingleChildScrollView(

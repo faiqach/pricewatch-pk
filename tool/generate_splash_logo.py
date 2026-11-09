@@ -26,7 +26,7 @@ if title_font is None:
 if tagline_font is None:
     tagline_font = ImageFont.load_default()
 
-title = 'AgriPulse'
+title = 'PriceWatch PK'
 tagline = 'Smart Farming Insights'
 
 title_box = draw.textbbox((0, 0), title, font=title_font)

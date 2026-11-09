@@ -1,6 +1,6 @@
-# AgriPulse
+# PriceWatch PK
 
-Smart Agricultural Market Intelligence app for farmers and traders in Pakistan.
+AI-powered mandi, grain & market analytics platform for farmers and traders in Pakistan.
 
 ## Highlights
 

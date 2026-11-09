@@ -133,7 +133,7 @@ class ProfileScreen extends StatelessWidget {
                       border: Border.all(color: kAccentColor.withValues(alpha: 0.4)),
                     ),
                     child: Text(
-                      isUrdu ? 'AgriPulse v1.0.0 • پاکستان' : 'AgriPulse v1.0.0 • Pakistan',
+                      isUrdu ? 'PriceWatch PK v1.0.0 • پاکستان' : 'PriceWatch PK v1.0.0 • Pakistan',
                       style: AppFonts.dmSans(context, 
                         color: kTextLight,
                         fontSize: 12,
@@ -172,8 +172,8 @@ class ProfileScreen extends StatelessWidget {
         ),
         content: Text(
           isUrdu
-              ? 'کیا آپ واقعی AgriPulse سے باہر نکلنا چاہتے ہیں؟'
-              : 'Are you sure you want to logout from AgriPulse?',
+              ? 'کیا آپ واقعی PriceWatch PK سے باہر نکلنا چاہتے ہیں؟'
+              : 'Are you sure you want to logout from PriceWatch PK?',
         ),
         actions: [
           TextButton(

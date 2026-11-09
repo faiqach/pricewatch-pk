@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirestoreService {
@@ -18,6 +20,64 @@ class FirestoreService {
       orderByField: orderByField,
       descending: descending,
     );
+  }
+
+  /// Streams [watchCrops] merged with the `market_prices` collection
+  /// (vendor/open-market prices), joined by crop name. Each emitted map
+  /// carries the official price as `price` and the matched vendor price
+  /// as `vendorPrice` (falling back to the official price if no vendor
+  /// record exists yet for that crop).
+  Stream<List<Map<String, dynamic>>> watchCropsCombined({
+    int limit = 0,
+    String? orderByField = 'name',
+    bool descending = false,
+  }) {
+    late StreamController<List<Map<String, dynamic>>> controller;
+    StreamSubscription? officialSub;
+    StreamSubscription? vendorSub;
+    List<Map<String, dynamic>> latestOfficial = [];
+    List<Map<String, dynamic>> latestVendor = [];
+
+    void emit() {
+      final Map<String, Map<String, dynamic>> vendorByName = {
+        for (final v in latestVendor)
+          (v['name'] as String? ?? '').toLowerCase(): v,
+      };
+
+      final merged = latestOfficial.map((official) {
+        final String key = (official['name'] as String? ?? '').toLowerCase();
+        final vendor = vendorByName[key];
+        return {
+          ...official,
+          'vendorPrice': (vendor?['price'] as num?)?.toDouble() ?? official['price'],
+        };
+      }).toList();
+
+      controller.add(merged);
+    }
+
+    controller = StreamController<List<Map<String, dynamic>>>.broadcast(
+      onListen: () {
+        officialSub = watchCrops(
+          limit: limit,
+          orderByField: orderByField,
+          descending: descending,
+        ).listen((data) {
+          latestOfficial = data;
+          emit();
+        });
+        vendorSub = _watchCollection(collectionPath: 'market_prices').listen((data) {
+          latestVendor = data;
+          emit();
+        });
+      },
+      onCancel: () {
+        officialSub?.cancel();
+        vendorSub?.cancel();
+      },
+    );
+
+    return controller.stream;
   }
 
   Stream<List<Map<String, dynamic>>> watchMandis({int limit = 0}) {

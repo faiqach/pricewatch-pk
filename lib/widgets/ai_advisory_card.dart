@@ -4,6 +4,7 @@ import '../data/dummy_data.dart';
 import '../models/weather_model.dart';
 import '../services/groq_service.dart';
 import '../services/weather_service.dart';
+import '../utils/city_provider.dart';
 import '../utils/colors.dart';
 import '../utils/constants.dart';
 import '../utils/language_provider.dart';
@@ -34,18 +35,6 @@ class _AiAdvisoryCardState extends State<AiAdvisoryCard> {
   Future<String>? _advisoryFuture;
   Future<WeatherReport>? _weatherFuture;
 
-  final List<String> _cities = const [
-    'Lahore',
-    'Islamabad',
-    'Faisalabad',
-    'Bahawalpur',
-    'Multan',
-    'Rawalpindi',
-    'Peshawar',
-    'Karachi',
-    'Quetta',
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -64,6 +53,7 @@ class _AiAdvisoryCardState extends State<AiAdvisoryCard> {
     super.didChangeDependencies();
     if (!_initialized) {
       _initialized = true;
+      _insightCity = CityScope.of(context).city;
       _refreshAdvisory();
     }
   }
@@ -361,7 +351,7 @@ class _AiAdvisoryCardState extends State<AiAdvisoryCard> {
     return DropdownButtonFormField<String>(
       key: ValueKey(_insightCity),
       initialValue: _insightCity,
-      items: _cities
+      items: CityNotifier.availableCities
           .map(
             (city) => DropdownMenuItem<String>(
               value: city,

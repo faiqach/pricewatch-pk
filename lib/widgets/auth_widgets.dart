@@ -101,7 +101,7 @@ class _WaveHeader extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  'AGRIPULSE',
+                  'PRICEWATCH PK',
                   style: AppFonts.dmSans(context, 
                     color: Colors.white.withValues(alpha: 0.48),
                     fontSize: 9,

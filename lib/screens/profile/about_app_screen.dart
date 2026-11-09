@@ -35,7 +35,7 @@ class AboutAppScreen extends StatelessWidget {
             backgroundColor: _deep,
             foregroundColor: Colors.white,
             title: Text(
-              isUrdu ? 'ایپ کے بارے میں' : 'About AgriPulse',
+              isUrdu ? 'ایپ کے بارے میں' : 'About PriceWatch PK',
               style: AppFonts.dmSans(context, fontWeight: FontWeight.w700),
             ),
             flexibleSpace: FlexibleSpaceBar(
@@ -86,7 +86,7 @@ class AboutAppScreen extends StatelessWidget {
                   iconBg: const Color(0xFFFFF3E0),
                   iconColor: const Color(0xFFE65100),
                   title: isUrdu ? 'سپورٹ' : 'Support',
-                  value: 'support@agripulse.pk',
+                  value: 'support@pricewatchpk.pk',
                 ),
                 _InfoTile(
                   icon: Icons.privacy_tip_rounded,
@@ -116,8 +116,8 @@ class AboutAppScreen extends StatelessWidget {
                 Center(
                   child: Text(
                     isUrdu
-                        ? '© 2024 AgriPulse — پاکستان کے کسانوں کے لیے'
-                        : '© 2024 AgriPulse — Built for Pakistan\'s Farmers',
+                        ? '© 2024 PriceWatch PK — پاکستان کے کسانوں کے لیے'
+                        : '© 2024 PriceWatch PK — Built for Pakistan\'s Farmers',
                     textAlign: TextAlign.center,
                     style: AppFonts.dmSans(context, 
                         color: kTextLight, fontSize: 12),
@@ -173,10 +173,10 @@ class _AboutHero extends StatelessWidget {
                     const SizedBox(height: 12),
                     RichText(
                       text: TextSpan(children: [
-                        TextSpan(text: 'Agri',
+                        TextSpan(text: 'PriceWatch',
                           style: AppFonts.playfairDisplay(context,
                             color: Colors.white, fontSize: 26, fontWeight: FontWeight.w700)),
-                        TextSpan(text: 'Pulse',
+                        TextSpan(text: ' PK',
                           style: AppFonts.playfairDisplay(context,
                             color: _accent, fontSize: 26, fontWeight: FontWeight.w700)),
                       ]),
@@ -244,8 +244,8 @@ class _MissionCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             isUrdu
-                ? 'AgriPulse پاکستان کے کسانوں کو ریئل ٹائم مارکیٹ ڈیٹا، موسم کی پیش گوئی اور AI مشاورت فراہم کر کے بہتر فیصلے کرنے میں مدد کرتا ہے۔'
-                : 'AgriPulse empowers Pakistani farmers with real-time market data, weather forecasts, and AI-powered advisory to make better decisions for their harvest and livelihood.',
+                ? 'PriceWatch PK پاکستان کے کسانوں کو ریئل ٹائم مارکیٹ ڈیٹا، موسم کی پیش گوئی اور AI مشاورت فراہم کر کے بہتر فیصلے کرنے میں مدد کرتا ہے۔'
+                : 'PriceWatch PK empowers Pakistani farmers with real-time market data, weather forecasts, and AI-powered advisory to make better decisions for their harvest and livelihood.',
             textAlign: isUrdu ? TextAlign.right : TextAlign.left,
             style: AppFonts.dmSans(context,
               color: Colors.white.withValues(alpha: 0.85),
